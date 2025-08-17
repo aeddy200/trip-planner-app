@@ -55,38 +55,30 @@ df['Trip Length (Days)'] = (df['End'] - df['Start']).dt.days + 1
 df['Participants'] = df['Attendees'].apply(len)
 df['Bubble Size'] = df['Trip Length (Days)'] * df['Participants']
 
-# --- Create Tabs for Desktop Chart and Mobile List ---
-tab1, tab2 = st.tabs(["📊 Timeline Chart", "📋 Trip List"])
+# --- Vertical Bubble Chart (Mobile-Friendly) ---
+st.header("Trip Timeline")
+fig = px.scatter(
+    df,
+    x="Type",          # Trip types are now on the horizontal axis
+    y="Start",         # Dates are now on the vertical axis
+    size="Bubble Size",
+    color="Trip",
+    hover_name="Trip",
+    size_max=60
+)
 
-# --- Tab 1: The Bubble Chart (Best for Desktop) ---
-with tab1:
-    fig = px.scatter(
-        df, x="Start", y="Type", size="Bubble Size", color="Trip", hover_name="Trip",
-        size_max=60
-    )
-    fig.update_traces(marker={'opacity': 0.7})
-    fig.update_layout(
-        title="Trip Timeline (Best on Desktop)",
-        xaxis_title="Date",
-        yaxis_title="Intensity Tier",
-        margin=dict(l=20, r=20, t=40, b=20)
-    )
-    fig.update_xaxes(tickangle=45, nticks=10)
-    st.plotly_chart(fig, use_container_width=True)
+# Re-orient the y-axis so that the earliest date is at the top
+fig.update_yaxes(autorange="reversed")
 
-# --- Tab 2: The Trip List (Ideal for Mobile) ---
-with tab2:
-    st.subheader("Upcoming Trips")
-    # Sort trips by start date to create a clean timeline
-    sorted_df = df.sort_values(by="Start")
-    for index, row in sorted_df.iterrows():
-        with st.container(border=True):
-            # Format the date to be readable, e.g., "Sep 06, 2025"
-            date_str = row['Start'].strftime("%b %d, %Y")
-            st.markdown(f"**{row['Trip']}**")
-            st.markdown(f"*{row['Type']}*")
-            st.write(f"**When:** {date_str}")
-            st.write(f"**Attendees:** {', '.join(row['Attendees'])}")
+fig.update_layout(
+    xaxis_title="Intensity Tier",
+    yaxis_title="Date",
+    # Set a fixed height to ensure it's scrollable and not squished
+    height=600,
+    margin=dict(l=20, r=20, t=40, b=20)
+)
+
+st.plotly_chart(fig, use_container_width=True)
 
 st.divider()
 
