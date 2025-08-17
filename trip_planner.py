@@ -8,19 +8,25 @@ import datetime
 st.set_page_config(page_title="Our Trip Planner", page_icon="🗺️", layout="wide")
 TRIP_DATA = [
     {
-        "Trip": "Mount Falcon Loop", "Type": "Casual Hiking", "Start": "2025-09-06", "End": "2025-09-06",
+        "Trip": "Mount Falcon Loop", "Type": "Casual Hiking",
+        # MODIFIED: Dates changed for spacing and duration
+        "Start": "2025-09-05", "End": "2025-09-07",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
-        "Miles": 3,
+        "Miles": 10,
         "Itinerary": [{'Day': 1, 'Time': '9:00 AM', 'Activity': 'Meet at the west trailhead parking lot.'}]
     },
     {
-        "Trip": "Lost Creek Wilderness Intro", "Type": "Beginner Backpacking", "Start": "2025-09-20", "End": "2025-09-21",
+        "Trip": "Lost Creek Wilderness Intro", "Type": "Beginner Backpacking",
+        # MODIFIED: Dates changed for spacing and duration
+        "Start": "2026-01-15", "End": "2026-01-18",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
-        "Miles": 8,
+        "Miles": 15,
         "Itinerary": [{'Day': 1, 'Time': '10:00 AM', 'Activity': 'Meet at the trailhead, check gear.'}]
     },
     {
-        "Trip": "Four Pass Loop", "Type": "Intensive Backpacking", "Start": "2026-07-18", "End": "2026-07-21",
+        "Trip": "Four Pass Loop", "Type": "Intensive Backpacking",
+        # MODIFIED: Dates changed for spacing and duration
+        "Start": "2026-07-18", "End": "2026-07-22",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
         "Miles": 27,
         "Itinerary": [{'Day': 1, 'Time': '8:00 AM', 'Activity': 'Start at Maroon Lake, hike 7 miles.'}]
@@ -51,14 +57,12 @@ fig.update_traces(
     textfont=dict(color='black', size=12)
 )
 
-fig.update_yaxes(autorange="reversed")
+fig.update_y_axes(autorange="reversed")
 fig.update_layout(
     xaxis_title="Intensity Tier", yaxis_title="Date", height=600,
     margin=dict(l=10, r=10, t=40, b=20), showlegend=False,
     plot_bgcolor='rgba(0,0,0,0)'
 )
-
-# The vertical line calls have been removed.
 
 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False, 'staticPlot': True})
 
