@@ -8,12 +8,9 @@ import datetime
 st.set_page_config(page_title="Our Trip Planner", page_icon="🗺️", layout="wide")
 TRIP_DATA = [
     {
-        "Trip": "Garden of the Gods & Pikes Peak",
-        "TripAbbreviation": "GoG/Pikes",
-        "Type": "Casual Hiking",
+        "Trip": "Garden of the Gods & Pikes Peak", "TripAbbreviation": "GoG/Pikes", "Type": "Casual Hiking",
         "Start": "2025-09-05", "End": "2025-09-07",
-        "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
-        "Miles": 15,
+        "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"], "Miles": 15,
         "Itinerary": [
             {'Day': 1, 'Time': '12:00 PM', 'Activity': 'Arrive at Colorado Springs Airport (COS), pick up rental car.'},
             {'Day': 1, 'Time': '2:00 PM', 'Activity': 'Check into hotel and have a late lunch.'},
@@ -25,12 +22,9 @@ TRIP_DATA = [
         ]
     },
     {
-        "Trip": "Yellowstone NP - Grand Prismatic",
-        "TripAbbreviation": "Yellowstone",
-        "Type": "Beginner Backpacking",
+        "Trip": "Yellowstone NP - Grand Prismatic", "TripAbbreviation": "Yellowstone", "Type": "Beginner Backpacking",
         "Start": "2026-06-12", "End": "2026-06-15",
-        "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
-        "Miles": 20,
+        "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"], "Miles": 20,
         "Itinerary": [
             {'Day': 1, 'Time': '10:00 AM', 'Activity': 'Arrive at Bozeman Yellowstone Int\'l (BZN), drive to West Yellowstone.'},
             {'Day': 1, 'Time': '2:00 PM', 'Activity': 'Pick up backcountry permits and bear canisters from ranger station.'},
@@ -42,12 +36,9 @@ TRIP_DATA = [
         ]
     },
     {
-        "Trip": "Teton Crest Trail - Paintbrush Canyon",
-        "TripAbbreviation": "Tetons",
-        "Type": "Experienced Backpacking",
+        "Trip": "Teton Crest Trail - Paintbrush Canyon", "TripAbbreviation": "Tetons", "Type": "Experienced Backpacking",
         "Start": "2026-08-20", "End": "2026-08-24",
-        "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
-        "Miles": 35,
+        "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"], "Miles": 35,
         "Itinerary": [
             {'Day': 1, 'Time': '9:00 AM', 'Activity': 'Arrive at Jackson Hole Airport (JAC), shuttle to Jenny Lake.'},
             {'Day': 1, 'Time': '11:00 AM', 'Activity': 'Start at String Lake Trailhead, hike to Holly Lake campsite.'},
@@ -63,15 +54,16 @@ TRIP_DATA = [
 # --- Main App Logic ---
 st.markdown("<h1 style='font-size: 24px;'>🗺️ Our Adventure Planner</h1>", unsafe_allow_html=True)
 
-# --- NEW: Photo Gallery ---
+# --- Photo Gallery ---
 st.write("---")
 col1, col2, col3 = st.columns(3)
 with col1:
-    st.image("https://images.pexels.com/photos/1586252/pexels-photo-1586252.jpeg", caption="Garden of the Gods")
+    # MODIFIED: Using your exact filenames
+    st.image("assets/IMG_3937.jpg", caption="Garden of the Gods")
 with col2:
-    st.image("https://images.pexels.com/photos/414160/pexels-photo-414160.jpeg", caption="Yellowstone")
+    st.image("assets/IMG_4116.jpg", caption="Yellowstone")
 with col3:
-    st.image("https://images.pexels.com/photos/1770809/pexels-photo-1770809.jpeg", caption="Grand Tetons")
+    st.image("assets/PXL_20250623_191735244.MP.jpg", caption="Grand Tetons")
 st.write("---")
 
 
@@ -80,7 +72,6 @@ df['Start'] = pd.to_datetime(df['Start'])
 df['End'] = pd.to_datetime(df['End'])
 df['Trip Length (Days)'] = (df['End'] - df['Start']).dt.days + 1
 df['Participants'] = df['Attendees'].apply(len)
-# MODIFIED: Updated Bubble Text to include trip abbreviation
 df['Bubble Text'] = df.apply(
     lambda row: f"<b>{row['TripAbbreviation']}</b><br>{row['Participants']} People<br>{row['Trip Length (Days)']} Days<br>{row['Miles']} Miles",
     axis=1
@@ -98,9 +89,9 @@ fig = px.scatter(
 
 # --- Chart Formatting ---
 fig.update_traces(
-    marker=dict(size=100), # Slightly larger bubble for more text
+    marker=dict(size=100),
     textposition='middle center',
-    textfont=dict(color='black', size=11), # Slightly smaller font to fit
+    textfont=dict(color='black', size=11),
     hovertemplate='<b>%{hovertext}</b><br>Type: %{customdata[0]}<extra></extra>'
 )
 
