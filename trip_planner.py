@@ -55,28 +55,38 @@ df['Trip Length (Days)'] = (df['End'] - df['Start']).dt.days + 1
 df['Participants'] = df['Attendees'].apply(len)
 df['Bubble Size'] = df['Trip Length (Days)'] * df['Participants']
 
-# --- Bubble Chart ---
-fig = px.scatter(
-    df, x="Start", y="Type", size="Bubble Size", color="Trip", hover_name="Trip",
-    size_max=60, title="Trip Timeline"
-)
-fig.update_traces(marker={'opacity': 0.7})
+# --- Create Tabs for Desktop Chart and Mobile List ---
+tab1, tab2 = st.tabs(["📊 Timeline Chart", "📋 Trip List"])
 
-# --- MOBILE-FRIENDLY ADJUSTMENTS ---
-fig.update_layout(
-    xaxis_title="Date",
-    yaxis_title="Intensity Tier",
-    # Adjust margins to give more space, especially on the left and right
-    margin=dict(l=20, r=20, t=40, b=20)
-)
-fig.update_xaxes(
-    # Angle the date labels to prevent them from overlapping
-    tickangle=45,
-    # Reduce the number of visible date ticks on the axis
-    nticks=10
-)
+# --- Tab 1: The Bubble Chart (Best for Desktop) ---
+with tab1:
+    fig = px.scatter(
+        df, x="Start", y="Type", size="Bubble Size", color="Trip", hover_name="Trip",
+        size_max=60
+    )
+    fig.update_traces(marker={'opacity': 0.7})
+    fig.update_layout(
+        title="Trip Timeline (Best on Desktop)",
+        xaxis_title="Date",
+        yaxis_title="Intensity Tier",
+        margin=dict(l=20, r=20, t=40, b=20)
+    )
+    fig.update_xaxes(tickangle=45, nticks=10)
+    st.plotly_chart(fig, use_container_width=True)
 
-st.plotly_chart(fig, use_container_width=True)
+# --- Tab 2: The Trip List (Ideal for Mobile) ---
+with tab2:
+    st.subheader("Upcoming Trips")
+    # Sort trips by start date to create a clean timeline
+    sorted_df = df.sort_values(by="Start")
+    for index, row in sorted_df.iterrows():
+        with st.container(border=True):
+            # Format the date to be readable, e.g., "Sep 06, 2025"
+            date_str = row['Start'].strftime("%b %d, %Y")
+            st.markdown(f"**{row['Trip']}**")
+            st.markdown(f"*{row['Type']}*")
+            st.write(f"**When:** {date_str}")
+            st.write(f"**Attendees:** {', '.join(row['Attendees'])}")
 
 st.divider()
 
@@ -88,9 +98,8 @@ if selected_trip_name:
     trip = df[df['Trip'] == selected_trip_name].to_dict('records')[0]
 
     st.subheader("Attendees")
-    attendees = trip['Attendees']
-    if attendees:
-        for name in attendees:
+    if trip['Attendees']:
+        for name in trip['Attendees']:
             st.markdown(f"- {name}")
     else:
         st.write("No one has signed up yet.")
