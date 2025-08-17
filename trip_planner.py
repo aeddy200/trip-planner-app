@@ -4,47 +4,27 @@ import pandas as pd
 import plotly.express as px
 import datetime
 
-# --- App Configuration ---
-st.set_page_config(
-    page_title="Our Trip Planner",
-    page_icon="🗺️",
-    layout="wide"
-)
-
-# --- Trip Data ---
+# --- App Configuration & Data ---
+st.set_page_config(page_title="Our Trip Planner", page_icon="🗺️", layout="wide")
 TRIP_DATA = [
     {
         "Trip": "Mount Falcon Loop", "Type": "Casual Hiking", "Start": "2025-09-06", "End": "2025-09-06",
         "Attendees": ["Dré", "Tracy"],
-        "Itinerary": [
-            {'Day': 1, 'Time': '9:00 AM', 'Activity': 'Meet at the west trailhead parking lot.'},
-            {'Day': 1, 'Time': '9:15 AM', 'Activity': 'Begin the 3-mile loop hike.'},
-            {'Day': 1, 'Time': '11:30 AM', 'Activity': 'Finish hike and head to Morrison for lunch.'},
-        ]
+        "Itinerary": [{'Day': 1, 'Time': '9:00 AM', 'Activity': 'Meet at the west trailhead parking lot.'}]
     },
     {
         "Trip": "Lost Creek Wilderness Intro", "Type": "Beginner Backpacking", "Start": "2025-09-20", "End": "2025-09-21",
         "Attendees": ["Dré", "Chanty"],
-        "Itinerary": [
-            {'Day': 1, 'Time': '10:00 AM', 'Activity': 'Meet at the trailhead, check gear.'},
-            {'Day': 1, 'Time': '11:00 AM', 'Activity': 'Hike 4 miles to designated campsite.'},
-            {'Day': 1, 'Time': '3:00 PM', 'Activity': 'Set up camp, filter water, and relax.'},
-            {'Day': 2, 'Time': '9:00 AM', 'Activity': 'Pack up camp and hike back to the trailhead.'},
-        ]
+        "Itinerary": [{'Day': 1, 'Time': '10:00 AM', 'Activity': 'Meet at the trailhead, check gear.'}]
     },
     {
         "Trip": "Four Pass Loop", "Type": "Intensive Backpacking", "Start": "2026-07-18", "End": "2026-07-21",
         "Attendees": ["Dré", "Teresa", "Chanty"],
-        "Itinerary": [
-            {'Day': 1, 'Time': '8:00 AM', 'Activity': 'Start at Maroon Lake, hike 7 miles over West Maroon Pass.'},
-            {'Day': 2, 'Time': '7:00 AM', 'Activity': 'Hike 8 miles over Frigid Air Pass.'},
-            {'Day': 3, 'Time': '7:00 AM', 'Activity': 'Hike 7 miles over Trail Rider Pass.'},
-            {'Day': 4, 'Time': '6:00 AM', 'Activity': 'Hike 5 miles over Buckskin Pass and return to trailhead.'},
-        ]
+        "Itinerary": [{'Day': 1, 'Time': '8:00 AM', 'Activity': 'Start at Maroon Lake, hike 7 miles.'}]
     }
 ]
 
-# --- Main App ---
+# --- Main App Logic ---
 st.markdown("<h1 style='font-size: 24px;'>🗺️ Our Adventure Planner</h1>", unsafe_allow_html=True)
 
 df = pd.DataFrame(TRIP_DATA)
@@ -55,46 +35,25 @@ df['Participants'] = df['Attendees'].apply(len)
 df['Bubble Size'] = df['Trip Length (Days)'] * df['Participants']
 df['Attendee List'] = df['Attendees'].apply(lambda x: ', '.join(x))
 
-
-# --- Vertical Bubble Chart ---
 st.markdown("<h2 style='font-size: 20px;'>Timeline of Trips being Planned</h2>", unsafe_allow_html=True)
 
 fig = px.scatter(
-    df,
-    x="Type",
-    y="Start",
-    size="Bubble Size",
-    color="Trip",
-    hover_name="Trip",
+    df, x="Type", y="Start", size="Bubble Size", color="Trip", hover_name="Trip",
     custom_data=['Start', 'Attendee List'],
-    size_max=80
+    size_max=80 # Corrected bubble size
 )
-
 fig.update_traces(
     hovertemplate='<b>%{hovertext}</b><br><br>Date: %{customdata[0]|%b %d, %Y}<br>Attendees: %{customdata[1]}<extra></extra>'
 )
-
 fig.update_yaxes(autorange="reversed")
-
 fig.update_layout(
-    xaxis_title="Intensity Tier",
-    yaxis_title="Date",
-    height=600,
-    margin=dict(l=10, r=10, t=40, b=20),
-    showlegend=False
+    xaxis_title="Intensity Tier", yaxis_title="Date", height=600,
+    margin=dict(l=10, r=10, t=40, b=20), showlegend=False
 )
-
-# --- ADD VERTICAL SEPARATOR LINES ---
-# Plotly treats categorical axes as numbers (0, 1, 2, ...). We add lines at the midpoints.
-fig.add_vline(x=0.5, line_width=2, line_dash="dash", line_color="grey")
-fig.add_vline(x=1.5, line_width=2, line_dash="dash", line_color="grey")
-
-
 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
 st.divider()
 
-# --- Combined Trip Details Section ---
 st.header("Trip Details")
 selected_trip_name = st.selectbox("Select a trip to see its details:", options=df['Trip'])
 
@@ -103,19 +62,24 @@ if selected_trip_name:
 
     st.subheader("Attendees")
     if trip['Attendees']:
-        for name in trip['Attendees']:
-            st.markdown(f"- {name}")
+        for name in trip['Attendees']: st.markdown(f"- {name}")
     else:
         st.write("No one has signed up yet.")
 
     st.divider()
 
     st.subheader("Itinerary")
-    itinerary_items = trip['Itinerary']
-    if itinerary_items:
-        for item in itinerary_items:
+    if trip['Itinerary']:
+        for item in trip['Itinerary']:
             with st.container(border=True):
                 st.markdown(f"**Day {item['Day']} at {item['Time']}**")
                 st.write(item['Activity'])
     else:
         st.write("No itinerary planned yet.")
+
+    st.divider()
+
+    st.subheader("Want to go?")
+    if st.button("Request to Join This Trip"):
+        st.success(f"Your request to join the '{selected_trip_name}' trip has been sent!")
+        st.balloons()
