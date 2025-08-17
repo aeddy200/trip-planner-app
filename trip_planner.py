@@ -45,7 +45,8 @@ TRIP_DATA = [
 ]
 
 # --- Main App ---
-st.title("🗺️ Our Adventure Planner")
+# MODIFIED: Use markdown for a smaller, single-line title
+st.markdown("<h1 style='font-size: 24px;'>🗺️ Our Adventure Planner</h1>", unsafe_allow_html=True)
 st.write("An overview of all the trips we have planned for the next year!")
 
 df = pd.DataFrame(TRIP_DATA)
@@ -54,8 +55,11 @@ df['End'] = pd.to_datetime(df['End'])
 df['Trip Length (Days)'] = (df['End'] - df['Start']).dt.days + 1
 df['Participants'] = df['Attendees'].apply(len)
 df['Bubble Size'] = df['Trip Length (Days)'] * df['Participants']
+# Create a simple string of attendees for the hover tooltip
+df['Attendee List'] = df['Attendees'].apply(lambda x: ', '.join(x))
 
-# --- Vertical Bubble Chart (Mobile-Friendly) ---
+
+# --- Vertical Bubble Chart ---
 st.header("Trip Timeline")
 fig = px.scatter(
     df,
@@ -64,8 +68,18 @@ fig = px.scatter(
     size="Bubble Size",
     color="Trip",
     hover_name="Trip",
+    # MODIFIED: Clean up the hover tooltip to show only essential info
+    hover_data={
+        'Start': '|%b %d, %Y', # Format the date
+        'Attendee List': True,
+        'Type': False,
+        'Bubble Size': False,
+        'size': False
+    },
     size_max=60
 )
+# Rename hover labels for clarity
+fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Date: %{customdata[0]}<br>Attendees: %{customdata[1]}<extra></extra>')
 
 fig.update_yaxes(autorange="reversed")
 
@@ -74,10 +88,11 @@ fig.update_layout(
     yaxis_title="Date",
     height=600,
     margin=dict(l=20, r=20, t=40, b=20),
-    showlegend=False  # This line hides the legend
+    showlegend=False
 )
 
-st.plotly_chart(fig, use_container_width=True)
+# MODIFIED: Hide the modebar (the toolbar) and display the simplified chart
+st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
 st.divider()
 
