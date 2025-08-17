@@ -1,4 +1,4 @@
-# trip_planner.py
+# trip-planner.py
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -9,7 +9,6 @@ st.set_page_config(page_title="Our Trip Planner", page_icon="🗺️", layout="w
 TRIP_DATA = [
     {
         "Trip": "Mount Falcon Loop", "Type": "Casual Hiking",
-        # MODIFIED: Dates changed for spacing and duration
         "Start": "2025-09-05", "End": "2025-09-07",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
         "Miles": 10,
@@ -17,7 +16,6 @@ TRIP_DATA = [
     },
     {
         "Trip": "Lost Creek Wilderness Intro", "Type": "Beginner Backpacking",
-        # MODIFIED: Dates changed for spacing and duration
         "Start": "2026-01-15", "End": "2026-01-18",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
         "Miles": 15,
@@ -25,7 +23,6 @@ TRIP_DATA = [
     },
     {
         "Trip": "Four Pass Loop", "Type": "Intensive Backpacking",
-        # MODIFIED: Dates changed for spacing and duration
         "Start": "2026-07-18", "End": "2026-07-22",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
         "Miles": 27,
@@ -57,7 +54,8 @@ fig.update_traces(
     textfont=dict(color='black', size=12)
 )
 
-fig.update_y_axes(autorange="reversed")
+# MODIFIED: Corrected the function name from update_y_axes to update_yaxes
+fig.update_yaxes(autorange="reversed")
 fig.update_layout(
     xaxis_title="Intensity Tier", yaxis_title="Date", height=600,
     margin=dict(l=10, r=10, t=40, b=20), showlegend=False,
