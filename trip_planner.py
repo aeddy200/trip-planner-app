@@ -46,9 +46,8 @@ fig = px.scatter(
 
 # --- Chart Formatting ---
 fig.update_traces(
-    marker=dict(size=120),
+    marker=dict(size=85),
     textposition='middle center',
-    # MODIFIED: Text color is now black
     textfont=dict(color='black', size=12)
 )
 
@@ -58,6 +57,8 @@ fig.update_layout(
     margin=dict(l=10, r=10, t=40, b=20), showlegend=False,
     plot_bgcolor='rgba(0,0,0,0)'
 )
+
+# The vertical line calls have been removed.
 
 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False, 'staticPlot': True})
 
