@@ -40,7 +40,7 @@ st.markdown("<h2 style='font-size: 20px;'>Timeline of Trips being Planned</h2>",
 fig = px.scatter(
     df, x="Type", y="Start", size="Bubble Size", color="Trip", hover_name="Trip",
     custom_data=['Start', 'Attendee List'],
-    size_max=80 # Corrected bubble size
+    size_max=55  # MODIFIED: Reduced max size to prevent overflow on mobile
 )
 fig.update_traces(
     hovertemplate='<b>%{hovertext}</b><br><br>Date: %{customdata[0]|%b %d, %Y}<br>Attendees: %{customdata[1]}<extra></extra>'
@@ -50,7 +50,9 @@ fig.update_layout(
     xaxis_title="Intensity Tier", yaxis_title="Date", height=600,
     margin=dict(l=10, r=10, t=40, b=20), showlegend=False
 )
-st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
+# MODIFIED: Added 'staticPlot': True to disable all interactivity except hover
+st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False, 'staticPlot': True})
 
 st.divider()
 
