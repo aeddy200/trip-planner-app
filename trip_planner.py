@@ -11,13 +11,10 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Trip Data with New Intensity Tiers and Simplified Attendees ---
+# --- Trip Data ---
 TRIP_DATA = [
     {
-        "Trip": "Mount Falcon Loop",
-        "Type": "Casual Hiking",
-        "Start": "2025-09-06",
-        "End": "2025-09-06",
+        "Trip": "Mount Falcon Loop", "Type": "Casual Hiking", "Start": "2025-09-06", "End": "2025-09-06",
         "Attendees": ["Dré", "Tracy"],
         "Itinerary": [
             {'Day': 1, 'Time': '9:00 AM', 'Activity': 'Meet at the west trailhead parking lot.'},
@@ -26,10 +23,7 @@ TRIP_DATA = [
         ]
     },
     {
-        "Trip": "Lost Creek Wilderness Intro",
-        "Type": "Beginner Backpacking",
-        "Start": "2025-09-20",
-        "End": "2025-09-21",
+        "Trip": "Lost Creek Wilderness Intro", "Type": "Beginner Backpacking", "Start": "2025-09-20", "End": "2025-09-21",
         "Attendees": ["Dré", "Chanty"],
         "Itinerary": [
             {'Day': 1, 'Time': '10:00 AM', 'Activity': 'Meet at the trailhead, check gear.'},
@@ -39,10 +33,7 @@ TRIP_DATA = [
         ]
     },
     {
-        "Trip": "Four Pass Loop",
-        "Type": "Intensive Backpacking",
-        "Start": "2026-07-18",
-        "End": "2026-07-21",
+        "Trip": "Four Pass Loop", "Type": "Intensive Backpacking", "Start": "2026-07-18", "End": "2026-07-21",
         "Attendees": ["Dré", "Teresa", "Chanty"],
         "Itinerary": [
             {'Day': 1, 'Time': '8:00 AM', 'Activity': 'Start at Maroon Lake, hike 7 miles over West Maroon Pass.'},
@@ -70,7 +61,21 @@ fig = px.scatter(
     size_max=60, title="Trip Timeline"
 )
 fig.update_traces(marker={'opacity': 0.7})
-fig.update_layout(xaxis_title="Date", yaxis_title="Intensity Tier")
+
+# --- MOBILE-FRIENDLY ADJUSTMENTS ---
+fig.update_layout(
+    xaxis_title="Date",
+    yaxis_title="Intensity Tier",
+    # Adjust margins to give more space, especially on the left and right
+    margin=dict(l=20, r=20, t=40, b=20)
+)
+fig.update_xaxes(
+    # Angle the date labels to prevent them from overlapping
+    tickangle=45,
+    # Reduce the number of visible date ticks on the axis
+    nticks=10
+)
+
 st.plotly_chart(fig, use_container_width=True)
 
 st.divider()
@@ -82,7 +87,6 @@ selected_trip_name = st.selectbox("Select a trip to see its details:", options=d
 if selected_trip_name:
     trip = df[df['Trip'] == selected_trip_name].to_dict('records')[0]
 
-    # --- Display Attendees as a list ---
     st.subheader("Attendees")
     attendees = trip['Attendees']
     if attendees:
@@ -93,13 +97,10 @@ if selected_trip_name:
 
     st.divider()
 
-    # --- Display Mobile-Friendly Itinerary ---
     st.subheader("Itinerary")
     itinerary_items = trip['Itinerary']
     if itinerary_items:
-        # MODIFIED: Loop through each item to create a vertical display
         for item in itinerary_items:
-            # Use a container with a border for a nice visual separation
             with st.container(border=True):
                 st.markdown(f"**Day {item['Day']} at {item['Time']}**")
                 st.write(item['Activity'])
