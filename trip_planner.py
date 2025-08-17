@@ -1,4 +1,4 @@
-# trip-planner.py
+# trip_planner.py
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -8,25 +8,47 @@ import datetime
 st.set_page_config(page_title="Our Trip Planner", page_icon="🗺️", layout="wide")
 TRIP_DATA = [
     {
-        "Trip": "Mount Falcon Loop", "Type": "Casual Hiking",
+        "Trip": "Garden of the Gods & Pikes Peak",
+        "Type": "Casual Hiking",
         "Start": "2025-09-05", "End": "2025-09-07",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
-        "Miles": 10,
-        "Itinerary": [{'Day': 1, 'Time': '9:00 AM', 'Activity': 'Meet at the west trailhead parking lot.'}]
-    },
-    {
-        "Trip": "Lost Creek Wilderness Intro", "Type": "Beginner Backpacking",
-        "Start": "2026-01-15", "End": "2026-01-18",
-        "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
         "Miles": 15,
-        "Itinerary": [{'Day': 1, 'Time': '10:00 AM', 'Activity': 'Meet at the trailhead, check gear.'}]
+        "Itinerary": [
+            {'Day': 1, 'Time': '12:00 PM', 'Activity': 'Arrive in Colorado Springs, check into lodging.'},
+            {'Day': 1, 'Time': '3:00 PM', 'Activity': 'Explore Garden of the Gods Park (Perkins Central Garden Trail).'},
+            {'Day': 2, 'Time': '9:00 AM', 'Activity': 'Drive up the Pikes Peak Highway, stopping at viewpoints.'},
+            {'Day': 2, 'Time': '12:00 PM', 'Activity': 'Lunch at the Summit Visitor Center.'},
+            {'Day': 3, 'Time': '10:00 AM', 'Activity': 'Visit the Manitou Cliff Dwellings before departing.'}
+        ]
     },
     {
-        "Trip": "Four Pass Loop", "Type": "Intensive Backpacking",
-        "Start": "2026-07-18", "End": "2026-07-22",
+        "Trip": "Yellowstone NP - Grand Prismatic",
+        "Type": "Beginner Backpacking",
+        "Start": "2026-06-12", "End": "2026-06-15",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
-        "Miles": 27,
-        "Itinerary": [{'Day': 1, 'Time': '8:00 AM', 'Activity': 'Start at Maroon Lake, hike 7 miles.'}]
+        "Miles": 20,
+        "Itinerary": [
+            {'Day': 1, 'Time': '10:00 AM', 'Activity': 'Arrive at West Yellowstone, pick up backcountry permits.'},
+            {'Day': 1, 'Time': '2:00 PM', 'Activity': 'Hike 3 miles to the first campsite near Fairy Falls.'},
+            {'Day': 2, 'Time': '9:00 AM', 'Activity': 'Day hike to the Grand Prismatic Spring Overlook.'},
+            {'Day': 2, 'Time': '1:00 PM', 'Activity': 'Explore Midway and Upper Geyser Basins (Old Faithful).'},
+            {'Day': 3, 'Time': '10:00 AM', 'Activity': 'Hike 5 miles along the Firehole River to the next site.'},
+            {'Day': 4, 'Time': '9:00 AM', 'Activity': 'Hike out and return to West Yellowstone.'}
+        ]
+    },
+    {
+        "Trip": "Teton Crest Trail - Paintbrush Canyon",
+        "Type": "Experienced Backpacking", # Renamed Category
+        "Start": "2026-08-20", "End": "2026-08-24",
+        "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
+        "Miles": 35,
+        "Itinerary": [
+            {'Day': 1, 'Time': '8:00 AM', 'Activity': 'Start at String Lake Trailhead, hike to Holly Lake.'},
+            {'Day': 2, 'Time': '7:00 AM', 'Activity': 'Climb over Paintbrush Divide and camp at Lake Solitude.'},
+            {'Day': 3, 'Time': '8:00 AM', 'Activity': 'Hike through the North Fork Cascade Canyon.'},
+            {'Day': 4, 'Time': '9:00 AM', 'Activity': 'Continue through Cascade Canyon, past Inspiration Point.'},
+            {'Day': 5, 'Time': '8:00 AM', 'Activity': 'Hike out via Jenny Lake and finish the trail.'}
+        ]
     }
 ]
 
@@ -54,12 +76,20 @@ fig.update_traces(
     textfont=dict(color='black', size=12)
 )
 
-# MODIFIED: Corrected the function name from update_y_axes to update_yaxes
 fig.update_yaxes(autorange="reversed")
+# MODIFIED: Adjustments for x-axis label formatting
+fig.update_xaxes(
+    # Move the category labels down slightly
+    tickfont=dict(size=10),
+    # Shift the entire axis to the left
+    range=[-0.5, 2.5]
+)
 fig.update_layout(
     xaxis_title="Intensity Tier", yaxis_title="Date", height=600,
     margin=dict(l=10, r=10, t=40, b=20), showlegend=False,
-    plot_bgcolor='rgba(0,0,0,0)'
+    plot_bgcolor='rgba(0,0,0,0)',
+    # Set x-axis tick labels to be horizontal and wrap if needed
+    xaxis_tickangle=0
 )
 
 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False, 'staticPlot': True})
