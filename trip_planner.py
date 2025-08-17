@@ -46,7 +46,6 @@ TRIP_DATA = [
 
 # --- Main App ---
 st.markdown("<h1 style='font-size: 24px;'>🗺️ Our Adventure Planner</h1>", unsafe_allow_html=True)
-# The "overview" line has been removed.
 
 df = pd.DataFrame(TRIP_DATA)
 df['Start'] = pd.to_datetime(df['Start'])
@@ -58,7 +57,6 @@ df['Attendee List'] = df['Attendees'].apply(lambda x: ', '.join(x))
 
 
 # --- Vertical Bubble Chart ---
-# MODIFIED: Renamed the header
 st.markdown("<h2 style='font-size: 20px;'>Timeline of Trips being Planned</h2>", unsafe_allow_html=True)
 
 fig = px.scatter(
@@ -69,7 +67,6 @@ fig = px.scatter(
     color="Trip",
     hover_name="Trip",
     custom_data=['Start', 'Attendee List'],
-    # MODIFIED: Increased the maximum bubble size
     size_max=80
 )
 
@@ -83,10 +80,15 @@ fig.update_layout(
     xaxis_title="Intensity Tier",
     yaxis_title="Date",
     height=600,
-    # MODIFIED: Reduced left and right margins to widen the chart
     margin=dict(l=10, r=10, t=40, b=20),
     showlegend=False
 )
+
+# --- ADD VERTICAL SEPARATOR LINES ---
+# Plotly treats categorical axes as numbers (0, 1, 2, ...). We add lines at the midpoints.
+fig.add_vline(x=0.5, line_width=2, line_dash="dash", line_color="grey")
+fig.add_vline(x=1.5, line_width=2, line_dash="dash", line_color="grey")
+
 
 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
