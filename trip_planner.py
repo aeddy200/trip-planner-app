@@ -14,11 +14,13 @@ TRIP_DATA = [
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
         "Miles": 15,
         "Itinerary": [
-            {'Day': 1, 'Time': '12:00 PM', 'Activity': 'Arrive in Colorado Springs, check into lodging.'},
-            {'Day': 1, 'Time': '3:00 PM', 'Activity': 'Explore Garden of the Gods Park (Perkins Central Garden Trail).'},
+            {'Day': 1, 'Time': '12:00 PM', 'Activity': 'Arrive at Colorado Springs Airport (COS), pick up rental car.'},
+            {'Day': 1, 'Time': '2:00 PM', 'Activity': 'Check into hotel and have a late lunch.'},
+            {'Day': 1, 'Time': '4:00 PM', 'Activity': 'Easy walk through Garden of the Gods (Perkins Central Garden Trail).'},
             {'Day': 2, 'Time': '9:00 AM', 'Activity': 'Drive up the Pikes Peak Highway, stopping at viewpoints.'},
-            {'Day': 2, 'Time': '12:00 PM', 'Activity': 'Lunch at the Summit Visitor Center.'},
-            {'Day': 3, 'Time': '10:00 AM', 'Activity': 'Visit the Manitou Cliff Dwellings before departing.'}
+            {'Day': 2, 'Time': '12:00 PM', 'Activity': 'Lunch and acclimatization at the Summit Visitor Center.'},
+            {'Day': 3, 'Time': '10:00 AM', 'Activity': 'Visit the Manitou Cliff Dwellings.'},
+            {'Day': 3, 'Time': '1:00 PM', 'Activity': 'Depart from Colorado Springs Airport (COS).'}
         ]
     },
     {
@@ -28,26 +30,29 @@ TRIP_DATA = [
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
         "Miles": 20,
         "Itinerary": [
-            {'Day': 1, 'Time': '10:00 AM', 'Activity': 'Arrive at West Yellowstone, pick up backcountry permits.'},
-            {'Day': 1, 'Time': '2:00 PM', 'Activity': 'Hike 3 miles to the first campsite near Fairy Falls.'},
+            {'Day': 1, 'Time': '10:00 AM', 'Activity': 'Arrive at Bozeman Yellowstone Int\'l (BZN), drive to West Yellowstone.'},
+            {'Day': 1, 'Time': '2:00 PM', 'Activity': 'Pick up backcountry permits and bear canisters from ranger station.'},
+            {'Day': 1, 'Time': '4:00 PM', 'Activity': 'Hike 3 miles to the first campsite near Fairy Falls.'},
             {'Day': 2, 'Time': '9:00 AM', 'Activity': 'Day hike to the Grand Prismatic Spring Overlook.'},
             {'Day': 2, 'Time': '1:00 PM', 'Activity': 'Explore Midway and Upper Geyser Basins (Old Faithful).'},
             {'Day': 3, 'Time': '10:00 AM', 'Activity': 'Hike 5 miles along the Firehole River to the next site.'},
-            {'Day': 4, 'Time': '9:00 AM', 'Activity': 'Hike out and return to West Yellowstone.'}
+            {'Day': 4, 'Time': '9:00 AM', 'Activity': 'Hike out and drive back to Bozeman for departure.'}
         ]
     },
     {
         "Trip": "Teton Crest Trail - Paintbrush Canyon",
-        "Type": "Experienced Backpacking", # Renamed Category
+        "Type": "Experienced Backpacking",
         "Start": "2026-08-20", "End": "2026-08-24",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
         "Miles": 35,
         "Itinerary": [
-            {'Day': 1, 'Time': '8:00 AM', 'Activity': 'Start at String Lake Trailhead, hike to Holly Lake.'},
+            {'Day': 1, 'Time': '9:00 AM', 'Activity': 'Arrive at Jackson Hole Airport (JAC), shuttle to Jenny Lake.'},
+            {'Day': 1, 'Time': '11:00 AM', 'Activity': 'Start at String Lake Trailhead, hike to Holly Lake campsite.'},
             {'Day': 2, 'Time': '7:00 AM', 'Activity': 'Climb over Paintbrush Divide and camp at Lake Solitude.'},
             {'Day': 3, 'Time': '8:00 AM', 'Activity': 'Hike through the North Fork Cascade Canyon.'},
             {'Day': 4, 'Time': '9:00 AM', 'Activity': 'Continue through Cascade Canyon, past Inspiration Point.'},
-            {'Day': 5, 'Time': '8:00 AM', 'Activity': 'Hike out via Jenny Lake and finish the trail.'}
+            {'Day': 5, 'Time': '8:00 AM', 'Activity': 'Hike out via Jenny Lake and shuttle back to Jackson.'},
+            {'Day': 5, 'Time': '2:00 PM', 'Activity': 'Depart from Jackson Hole Airport (JAC).'}
         ]
     }
 ]
@@ -62,34 +67,37 @@ df['Trip Length (Days)'] = (df['End'] - df['Start']).dt.days + 1
 df['Participants'] = df['Attendees'].apply(len)
 df['Bubble Text'] = df.apply(lambda row: f"<b>{row['Participants']} People<br>{row['Trip Length (Days)']} Days<br>{row['Miles']} Miles</b>", axis=1)
 
+# MODIFIED: Create an abbreviated column for the x-axis
+abbreviation_map = {
+    "Casual Hiking": "Casual",
+    "Beginner Backpacking": "Beginner",
+    "Experienced Backpacking": "Experienced"
+}
+df['Type Abbreviated'] = df['Type'].map(abbreviation_map)
+
 st.markdown("<h2 style='font-size: 20px;'>Timeline of Trips being Planned</h2>", unsafe_allow_html=True)
 
 fig = px.scatter(
-    df, x="Type", y="Start", color="Trip", text="Bubble Text",
-    hover_name="Trip"
+    df, x="Type Abbreviated", y="Start", color="Trip", text="Bubble Text",
+    hover_name="Trip", custom_data=['Type'] # Pass full type name for hover
 )
 
 # --- Chart Formatting ---
 fig.update_traces(
     marker=dict(size=85),
     textposition='middle center',
-    textfont=dict(color='black', size=12)
+    textfont=dict(color='black', size=12),
+    hovertemplate='<b>%{hovertext}</b><br>Type: %{customdata[0]}<extra></extra>'
 )
 
 fig.update_yaxes(autorange="reversed")
-# MODIFIED: Adjustments for x-axis label formatting
 fig.update_xaxes(
-    # Move the category labels down slightly
-    tickfont=dict(size=10),
-    # Shift the entire axis to the left
-    range=[-0.5, 2.5]
+    tickfont=dict(size=12) # Slightly larger font for abbreviations
 )
 fig.update_layout(
-    xaxis_title="Intensity Tier", yaxis_title="Date", height=600,
+    xaxis_title="Trip Type", yaxis_title="Date", height=600, # Renamed axis
     margin=dict(l=10, r=10, t=40, b=20), showlegend=False,
-    plot_bgcolor='rgba(0,0,0,0)',
-    # Set x-axis tick labels to be horizontal and wrap if needed
-    xaxis_tickangle=0
+    plot_bgcolor='rgba(0,0,0,0)'
 )
 
 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False, 'staticPlot': True})
@@ -111,11 +119,14 @@ if selected_trip_name:
     st.divider()
 
     st.subheader("Itinerary")
-    if trip['Itinerary']:
-        for item in trip['Itinerary']:
-            with st.container(border=True):
-                st.markdown(f"**Day {item['Day']} at {item['Time']}**")
-                st.write(item['Activity'])
+    itinerary_items = trip['Itinerary']
+    if itinerary_items:
+        # MODIFIED: Group itinerary by day to display in dropdowns
+        itinerary_df = pd.DataFrame(itinerary_items)
+        for day, activities in itinerary_df.groupby('Day'):
+            with st.expander(f"**Day {day}**"):
+                for index, row in activities.iterrows():
+                    st.markdown(f"**{row['Time']}**: {row['Activity']}")
     else:
         st.write("No itinerary planned yet.")
 
