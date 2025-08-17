@@ -10,19 +10,19 @@ TRIP_DATA = [
     {
         "Trip": "Mount Falcon Loop", "Type": "Casual Hiking", "Start": "2025-09-06", "End": "2025-09-06",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
-        "Miles": 3, # Generated data
+        "Miles": 3,
         "Itinerary": [{'Day': 1, 'Time': '9:00 AM', 'Activity': 'Meet at the west trailhead parking lot.'}]
     },
     {
         "Trip": "Lost Creek Wilderness Intro", "Type": "Beginner Backpacking", "Start": "2025-09-20", "End": "2025-09-21",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
-        "Miles": 8, # Generated data
+        "Miles": 8,
         "Itinerary": [{'Day': 1, 'Time': '10:00 AM', 'Activity': 'Meet at the trailhead, check gear.'}]
     },
     {
         "Trip": "Four Pass Loop", "Type": "Intensive Backpacking", "Start": "2026-07-18", "End": "2026-07-21",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
-        "Miles": 27, # Generated data
+        "Miles": 27,
         "Itinerary": [{'Day': 1, 'Time': '8:00 AM', 'Activity': 'Start at Maroon Lake, hike 7 miles.'}]
     }
 ]
@@ -35,30 +35,27 @@ df['Start'] = pd.to_datetime(df['Start'])
 df['End'] = pd.to_datetime(df['End'])
 df['Trip Length (Days)'] = (df['End'] - df['Start']).dt.days + 1
 df['Participants'] = df['Attendees'].apply(len)
-# Create the text to be displayed inside the bubbles
-df['Bubble Text'] = df.apply(lambda row: f"{row['Participants']} People<br>{row['Trip Length (Days)']} Days<br>{row['Miles']} Miles", axis=1)
+df['Bubble Text'] = df.apply(lambda row: f"<b>{row['Participants']} People<br>{row['Trip Length (Days)']} Days<br>{row['Miles']} Miles</b>", axis=1)
 
 st.markdown("<h2 style='font-size: 20px;'>Timeline of Trips being Planned</h2>", unsafe_allow_html=True)
 
 fig = px.scatter(
-    df, x="Type", y="Start", color="Trip", text="Bubble Text", # Use the new text column
-    hover_name="Trip" # Keep hover name for clarity
+    df, x="Type", y="Start", color="Trip", text="Bubble Text",
+    hover_name="Trip"
 )
 
 # --- Chart Formatting ---
 fig.update_traces(
-    # Set a large, uniform size for all bubbles
     marker=dict(size=120),
-    # Center the text and make it white for contrast
     textposition='middle center',
-    textfont=dict(color='white', size=12)
+    # MODIFIED: Text color is now black
+    textfont=dict(color='black', size=12)
 )
 
 fig.update_yaxes(autorange="reversed")
 fig.update_layout(
     xaxis_title="Intensity Tier", yaxis_title="Date", height=600,
     margin=dict(l=10, r=10, t=40, b=20), showlegend=False,
-    # Make the plot background transparent for a cleaner look
     plot_bgcolor='rgba(0,0,0,0)'
 )
 
