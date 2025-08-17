@@ -9,6 +9,7 @@ st.set_page_config(page_title="Our Trip Planner", page_icon="🗺️", layout="w
 TRIP_DATA = [
     {
         "Trip": "Garden of the Gods & Pikes Peak",
+        "TripAbbreviation": "GoG/Pikes",
         "Type": "Casual Hiking",
         "Start": "2025-09-05", "End": "2025-09-07",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
@@ -25,6 +26,7 @@ TRIP_DATA = [
     },
     {
         "Trip": "Yellowstone NP - Grand Prismatic",
+        "TripAbbreviation": "Yellowstone",
         "Type": "Beginner Backpacking",
         "Start": "2026-06-12", "End": "2026-06-15",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
@@ -41,6 +43,7 @@ TRIP_DATA = [
     },
     {
         "Trip": "Teton Crest Trail - Paintbrush Canyon",
+        "TripAbbreviation": "Tetons",
         "Type": "Experienced Backpacking",
         "Start": "2026-08-20", "End": "2026-08-24",
         "Attendees": ["Dré", "Chanty", "Tracy", "Teresa"],
@@ -60,42 +63,51 @@ TRIP_DATA = [
 # --- Main App Logic ---
 st.markdown("<h1 style='font-size: 24px;'>🗺️ Our Adventure Planner</h1>", unsafe_allow_html=True)
 
+# --- NEW: Photo Gallery ---
+st.write("---")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.image("https://images.pexels.com/photos/1586252/pexels-photo-1586252.jpeg", caption="Garden of the Gods")
+with col2:
+    st.image("https://images.pexels.com/photos/414160/pexels-photo-414160.jpeg", caption="Yellowstone")
+with col3:
+    st.image("https://images.pexels.com/photos/1770809/pexels-photo-1770809.jpeg", caption="Grand Tetons")
+st.write("---")
+
+
 df = pd.DataFrame(TRIP_DATA)
 df['Start'] = pd.to_datetime(df['Start'])
 df['End'] = pd.to_datetime(df['End'])
 df['Trip Length (Days)'] = (df['End'] - df['Start']).dt.days + 1
 df['Participants'] = df['Attendees'].apply(len)
-df['Bubble Text'] = df.apply(lambda row: f"<b>{row['Participants']} People<br>{row['Trip Length (Days)']} Days<br>{row['Miles']} Miles</b>", axis=1)
+# MODIFIED: Updated Bubble Text to include trip abbreviation
+df['Bubble Text'] = df.apply(
+    lambda row: f"<b>{row['TripAbbreviation']}</b><br>{row['Participants']} People<br>{row['Trip Length (Days)']} Days<br>{row['Miles']} Miles",
+    axis=1
+)
 
-# MODIFIED: Create an abbreviated column for the x-axis
-abbreviation_map = {
-    "Casual Hiking": "Casual",
-    "Beginner Backpacking": "Beginner",
-    "Experienced Backpacking": "Experienced"
-}
+abbreviation_map = {"Casual Hiking": "Casual", "Beginner Backpacking": "Beginner", "Experienced Backpacking": "Experienced"}
 df['Type Abbreviated'] = df['Type'].map(abbreviation_map)
 
 st.markdown("<h2 style='font-size: 20px;'>Timeline of Trips being Planned</h2>", unsafe_allow_html=True)
 
 fig = px.scatter(
     df, x="Type Abbreviated", y="Start", color="Trip", text="Bubble Text",
-    hover_name="Trip", custom_data=['Type'] # Pass full type name for hover
+    hover_name="Trip", custom_data=['Type']
 )
 
 # --- Chart Formatting ---
 fig.update_traces(
-    marker=dict(size=85),
+    marker=dict(size=100), # Slightly larger bubble for more text
     textposition='middle center',
-    textfont=dict(color='black', size=12),
+    textfont=dict(color='black', size=11), # Slightly smaller font to fit
     hovertemplate='<b>%{hovertext}</b><br>Type: %{customdata[0]}<extra></extra>'
 )
 
 fig.update_yaxes(autorange="reversed")
-fig.update_xaxes(
-    tickfont=dict(size=12) # Slightly larger font for abbreviations
-)
+fig.update_xaxes(tickfont=dict(size=12))
 fig.update_layout(
-    xaxis_title="Trip Type", yaxis_title="Date", height=600, # Renamed axis
+    xaxis_title="Trip Type", yaxis_title="Date", height=600,
     margin=dict(l=10, r=10, t=40, b=20), showlegend=False,
     plot_bgcolor='rgba(0,0,0,0)'
 )
@@ -119,10 +131,8 @@ if selected_trip_name:
     st.divider()
 
     st.subheader("Itinerary")
-    itinerary_items = trip['Itinerary']
-    if itinerary_items:
-        # MODIFIED: Group itinerary by day to display in dropdowns
-        itinerary_df = pd.DataFrame(itinerary_items)
+    if trip['Itinerary']:
+        itinerary_df = pd.DataFrame(trip['Itinerary'])
         for day, activities in itinerary_df.groupby('Day'):
             with st.expander(f"**Day {day}**"):
                 for index, row in activities.iterrows():
