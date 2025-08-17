@@ -59,23 +59,22 @@ df['Bubble Size'] = df['Trip Length (Days)'] * df['Participants']
 st.header("Trip Timeline")
 fig = px.scatter(
     df,
-    x="Type",          # Trip types are now on the horizontal axis
-    y="Start",         # Dates are now on the vertical axis
+    x="Type",
+    y="Start",
     size="Bubble Size",
     color="Trip",
     hover_name="Trip",
     size_max=60
 )
 
-# Re-orient the y-axis so that the earliest date is at the top
 fig.update_yaxes(autorange="reversed")
 
 fig.update_layout(
     xaxis_title="Intensity Tier",
     yaxis_title="Date",
-    # Set a fixed height to ensure it's scrollable and not squished
     height=600,
-    margin=dict(l=20, r=20, t=40, b=20)
+    margin=dict(l=20, r=20, t=40, b=20),
+    showlegend=False  # This line hides the legend
 )
 
 st.plotly_chart(fig, use_container_width=True)
