@@ -46,7 +46,7 @@ TRIP_DATA = [
 
 # --- Main App ---
 st.markdown("<h1 style='font-size: 24px;'>🗺️ Our Adventure Planner</h1>", unsafe_allow_html=True)
-st.write("An overview of all the trips we have planned for the next year!")
+# The "overview" line has been removed.
 
 df = pd.DataFrame(TRIP_DATA)
 df['Start'] = pd.to_datetime(df['Start'])
@@ -58,8 +58,8 @@ df['Attendee List'] = df['Attendees'].apply(lambda x: ', '.join(x))
 
 
 # --- Vertical Bubble Chart ---
-# MODIFIED: Use markdown for a smaller header font size
-st.markdown("<h2 style='font-size: 20px;'>Trip Timeline</h2>", unsafe_allow_html=True)
+# MODIFIED: Renamed the header
+st.markdown("<h2 style='font-size: 20px;'>Timeline of Trips being Planned</h2>", unsafe_allow_html=True)
 
 fig = px.scatter(
     df,
@@ -68,11 +68,11 @@ fig = px.scatter(
     size="Bubble Size",
     color="Trip",
     hover_name="Trip",
-    # MODIFIED: Correctly pass custom data for the hover template
-    custom_data=['Start', 'Attendee List']
+    custom_data=['Start', 'Attendee List'],
+    # MODIFIED: Increased the maximum bubble size
+    size_max=80
 )
 
-# MODIFIED: Correctly structure the hover template
 fig.update_traces(
     hovertemplate='<b>%{hovertext}</b><br><br>Date: %{customdata[0]|%b %d, %Y}<br>Attendees: %{customdata[1]}<extra></extra>'
 )
@@ -83,7 +83,8 @@ fig.update_layout(
     xaxis_title="Intensity Tier",
     yaxis_title="Date",
     height=600,
-    margin=dict(l=20, r=20, t=40, b=20),
+    # MODIFIED: Reduced left and right margins to widen the chart
+    margin=dict(l=10, r=10, t=40, b=20),
     showlegend=False
 )
 
