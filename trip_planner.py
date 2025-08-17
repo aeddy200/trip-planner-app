@@ -15,7 +15,7 @@ st.set_page_config(
 TRIP_DATA = [
     {
         "Trip": "Mount Falcon Loop",
-        "Type": "Casual Hiking", # New Category
+        "Type": "Casual Hiking",
         "Start": "2025-09-06",
         "End": "2025-09-06",
         "Attendees": ["Dré", "Tracy"],
@@ -27,7 +27,7 @@ TRIP_DATA = [
     },
     {
         "Trip": "Lost Creek Wilderness Intro",
-        "Type": "Beginner Backpacking", # New Category
+        "Type": "Beginner Backpacking",
         "Start": "2025-09-20",
         "End": "2025-09-21",
         "Attendees": ["Dré", "Chanty"],
@@ -40,7 +40,7 @@ TRIP_DATA = [
     },
     {
         "Trip": "Four Pass Loop",
-        "Type": "Intensive Backpacking", # New Category
+        "Type": "Intensive Backpacking",
         "Start": "2026-07-18",
         "End": "2026-07-21",
         "Attendees": ["Dré", "Teresa", "Chanty"],
@@ -86,7 +86,6 @@ if selected_trip_name:
     st.subheader("Attendees")
     attendees = trip['Attendees']
     if attendees:
-        # MODIFIED: Displays attendees as a simple bulleted list
         for name in attendees:
             st.markdown(f"- {name}")
     else:
@@ -94,11 +93,15 @@ if selected_trip_name:
 
     st.divider()
 
-    # --- Display Detailed Itinerary as a Table ---
+    # --- Display Mobile-Friendly Itinerary ---
     st.subheader("Itinerary")
     itinerary_items = trip['Itinerary']
     if itinerary_items:
-        itinerary_df = pd.DataFrame(itinerary_items)
-        st.dataframe(itinerary_df, use_container_width=True, hide_index=True)
+        # MODIFIED: Loop through each item to create a vertical display
+        for item in itinerary_items:
+            # Use a container with a border for a nice visual separation
+            with st.container(border=True):
+                st.markdown(f"**Day {item['Day']} at {item['Time']}**")
+                st.write(item['Activity'])
     else:
         st.write("No itinerary planned yet.")
